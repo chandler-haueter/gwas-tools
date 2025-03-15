@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GWAS.tools | Structured Logging & Activity Monitor</title>
+    <meta
+      name="description"
+      content="A comprehensive logging system for the GWAS project ecosystem, capturing activities across domains, applications, and user interactions."
+    >
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="icon" href="assets/images/favicon.ico">
+    <!-- Load the log-viewer JavaScript -->
+    <script src="assets/js/log-viewer.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="logo">
+          <h1>GWAS.tools</h1>
+          <p class="tagline">Structured Logging & Activity Monitor</p>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="#logs" class="active">Logs</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#sources">Sources</a></li>
+            <li><a href="#api">API</a></li>
+            <li><a href="#help">Help</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section id="dashboard" class="container">
+        <div class="dashboard-header">
+          <h2>Activity Logs</h2>
+          <div class="dashboard-controls">
+            <button id="refresh-logs" class="btn primary">Refresh Logs</button>
+            <button id="export-logs" class="btn secondary">Export Logs</button>
+            <div class="search-container">
+              <input type="text" id="log-search" placeholder="Search logs..." />
+              <button id="search-button">Search</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-layout">
+          <aside class="filters-panel">
+            <h3>Filters</h3>
+            <div class="filter-group">
+              <h4>Log Types</h4>
+              <label><input type="checkbox" name="log-type" value="all" checked> All Types</label>
+              <label><input type="checkbox" name="log-type" value="system"> System</label>
+              <label><input type="checkbox" name="log-type" value="user"> User Activity</label>
+              <label><input type="checkbox" name="log-type" value="api"> API Calls</label>
+              <label><input type="checkbox" name="log-type" value="error"> Errors</label>
+              <label><input type="checkbox" name="log-type" value="warning"> Warnings</label>
+              <label><input type="checkbox" name="log-type" value="info"> Information</label>
+            </div>
+
+            <div class="filter-group">
+              <h4>Time Range</h4>
+              <select id="time-range">
+                <option value="last-hour">Last Hour</option>
+                <option value="last-day" selected>Last 24 Hours</option>
+                <option value="last-week">Last 7 Days</option>
+                <option value="last-month">Last 30 Days</option>
+                <option value="custom">Custom Range</option>
+              </select>
+              <div id="custom-date-range" style="display: none">
+                <label>From: <input type="date" id="date-from"></label>
+                <label>To: <input type="date" id="date-to"></label>
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <h4>Log Sources</h4>
+              <label><input type="checkbox" name="source" value="all" checked> All Sources</label>
+              <label><input type="checkbox" name="source" value="gwas.engineer">
+                gwas.engineer</label>
+              <label><input type="checkbox" name="source" value="gwas.app"> gwas.app</label>
+              <label><input type="checkbox" name="source" value="gwas.ai"> gwas.ai</label>
+              <label><input type="checkbox" name="source" value="gwas.dev"> gwas.dev</label>
+              <label><input type="checkbox" name="source" value="gwas.network"> gwas.network</label>
+              <label><input type="checkbox" name="source" value="gwas.wiki"> gwas.wiki</label>
+            </div>
+
+            <button id="apply-filters" class="btn primary">Apply Filters</button>
+            <button id="reset-filters" class="btn secondary">Reset</button>
+          </aside>
+
+          <div class="main-content">
+            <div class="log-statistics">
+              <div class="stat-card">
+                <h4>Total Logs</h4>
+                <p class="stat-value">32,459</p>
+                <p class="stat-change positive">+156 today</p>
+              </div>
+              <div class="stat-card">
+                <h4>Error Rate</h4>
+                <p class="stat-value">0.8%</p>
+                <p class="stat-change negative">-0.3% from yesterday</p>
+              </div>
+              <div class="stat-card">
+                <h4>Active Sources</h4>
+                <p class="stat-value">6</p>
+                <p class="stat-change neutral">No change</p>
+              </div>
+              <div class="stat-card">
+                <h4>Last Update</h4>
+                <p class="stat-value" id="last-update-time">2 minutes ago</p>
+                <p class="stat-change">Auto-refreshing</p>
+              </div>
+            </div>
+
+            <div class="log-viewer" id="log-viewer">
+              <!-- Log entries will be inserted here by JavaScript -->
+              <div class="loading-spinner">Loading logs...</div>
+            </div>
+
+            <div class="pagination">
+              <button id="prev-page" disabled>Previous</button>
+              <span id="page-info">Page 1 of 32</span>
+              <button id="next-page">Next</button>
+              <select id="page-size">
+                <option value="25">25 per page</option>
+                <option value="50" selected>50 per page</option>
+                <option value="100">100 per page</option>
+                <option value="250">250 per page</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="container section-padding">
+        <h2>About the GWAS.tools Logging System</h2>
+        <p>
+          The GWAS.tools logging system provides a comprehensive and structured approach to
+          capturing activities across the entire GWAS project ecosystem. Our append-only log
+          structure ensures a complete history of all actions and events, providing valuable
+          insights for troubleshooting, auditing, and analysis.
+        </p>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <h3>Structured Logging</h3>
+            <p>
+              All logs follow a consistent JSON schema, making them easily parsable and queryable.
+            </p>
+          </div>
+          <div class="feature-card">
+            <h3>Cross-Domain Integration</h3>
+            <p>Collect and centralize logs from all GWAS domains and applications.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Real-time Updates</h3>
+            <p>View log entries as they happen with minimal delay.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Advanced Filtering</h3>
+            <p>
+              Quickly find the information you need with powerful search and filter capabilities.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="sources" class="container section-padding">
+        <h2>Log Sources</h2>
+        <p>
+          Our logging system integrates with various components of the GWAS ecosystem, capturing
+          events from multiple sources:
+        </p>
+
+        <div class="sources-grid">
+          <div class="source-card">
+            <h3>User Interactions</h3>
+            <p>Mouse clicks, keyboard inputs, form submissions, and other UI events.</p>
+          </div>
+          <div class="source-card">
+            <h3>System Events</h3>
+            <p>Application startups, shutdowns, configuration changes, and system alerts.</p>
+          </div>
+          <div class="source-card">
+            <h3>API Transactions</h3>
+            <p>Requests, responses, and processing times for API calls.</p>
+          </div>
+          <div class="source-card">
+            <h3>Performance Metrics</h3>
+            <p>CPU usage, memory consumption, network bandwidth, and response times.</p>
+          </div>
+          <div class="source-card">
+            <h3>Error Reports</h3>
+            <p>Exceptions, warnings, and error conditions across applications.</p>
+          </div>
+          <div class="source-card">
+            <h3>Security Events</h3>
+            <p>Authentication attempts, permissions changes, and security alerts.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="api" class="container section-padding">
+        <h2>Logging API</h2>
+        <p>
+          Integrate your applications with our logging system using our simple API. Send log events
+          from any application with a simple HTTP request.
+        </p>
+
+        <div class="code-example">
+          <h3>Example: Sending a log event</h3>
+          <pre
+          >
+<code>
+curl -X POST https://api.gwas.tools/log \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "source": "my-application",
+    "type": "info",
+    "message": "User profile updated",
+    "details": {
+      "userId": "user-123",
+      "fields": ["name", "email"],
+      "success": true
+    }
+  }'
+                </code></pre
+          >
+        </div>
+
+        <a href="#" class="btn primary">View Full API Documentation</a>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-col">
+            <h3>GWAS.tools</h3>
+            <p>Structured logging and monitoring for the GWAS ecosystem</p>
+          </div>
+          <div class="footer-col">
+            <h3>Related Projects</h3>
+            <ul>
+              <li><a href="https://gwas.wiki">GWAS Wiki</a></li>
+              <li><a href="https://gwas.engineer">GWAS Engineer</a></li>
+              <li><a href="https://gwas.app">GWAS App</a></li>
+              <li><a href="https://gwas.dev">GWAS Dev</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h3>Resources</h3>
+            <ul>
+              <li><a href="#">API Documentation</a></li>
+              <li><a href="#">Integration Guides</a></li>
+              <li><a href="#">Schema Reference</a></li>
+              <li><a href="#">GitHub Repository</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>
+            &copy; 2025 GWAS Project. All logs are append-only and preserved for historical record.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>
