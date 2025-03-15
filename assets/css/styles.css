@@ -682,3 +682,51 @@ footer {
   font-family: 'Courier New', Courier, monospace;
   white-space: pre;
 }
+
+/* GitHub Gist Embed Styles */
+.gist-embed {
+  margin-bottom: 2rem;
+  background-color: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+}
+
+.gist-embed h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--color-primary);
+  font-size: 1.25rem;
+}
+
+/* Override GitHub Gist styles for better dark mode support */
+.gist .gist-file {
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.gist .gist-data {
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.gist .gist-meta {
+  background-color: var(--color-foreground) !important;
+  color: var(--color-text-muted) !important;
+}
+
+/* Toggle Viewer Button Styles */
+.toggle-viewers {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.toggle-viewers button {
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.toggle-viewers button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}

@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set up automatic last update time refresher
     setupLastUpdateTimeRefresher();
 
+    // Toggle between GitHub Gist embed and advanced log viewer
+    setupViewToggle();
+
     console.log('GWAS.tools main.js initialized');
 });
 
@@ -170,6 +173,36 @@ function setupLastUpdateTimeRefresher() {
                 }
             }
         }, 30000);
+    }
+}
+
+/**
+ * Toggle between GitHub Gist embed and advanced log viewer
+ */
+function setupViewToggle() {
+    const toggleButton = document.getElementById('toggle-view');
+    const logViewer = document.getElementById('log-viewer');
+    const pagination = document.querySelector('.pagination');
+    const gistEmbed = document.querySelector('.gist-embed');
+
+    if (toggleButton && logViewer && gistEmbed) {
+        toggleButton.addEventListener('click', () => {
+            const isShowingGist = gistEmbed.style.display !== 'none';
+
+            if (isShowingGist) {
+                // Switch to advanced viewer
+                gistEmbed.style.display = 'none';
+                logViewer.style.display = 'block';
+                if (pagination) pagination.style.display = 'flex';
+                toggleButton.textContent = 'Switch to GitHub Gist View';
+            } else {
+                // Switch to Gist embed
+                gistEmbed.style.display = 'block';
+                logViewer.style.display = 'none';
+                if (pagination) pagination.style.display = 'none';
+                toggleButton.textContent = 'Switch to Advanced Log Viewer';
+            }
+        });
     }
 }
 

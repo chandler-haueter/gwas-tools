@@ -138,12 +138,27 @@
               </div>
             </div>
 
-            <div class="log-viewer" id="log-viewer">
+            <!-- Direct GitHub Gist Embed -->
+            <div class="gist-embed">
+              <h3>Real-time Logs (GitHub Gist)</h3>
+              <script
+                src="https://gist.github.com/chandler-haueter/563010553dd301e390ec75b278d3b671.js"
+              ></script>
+            </div>
+
+            <!-- JavaScript Log Viewer (can be toggled with the button below) -->
+            <div class="toggle-viewers">
+              <button id="toggle-view" class="btn secondary">
+                Switch to Advanced Log Viewer
+              </button>
+            </div>
+
+            <div class="log-viewer" id="log-viewer" style="display: none">
               <!-- Log entries will be inserted here by JavaScript -->
               <div class="loading-spinner">Loading logs...</div>
             </div>
 
-            <div class="pagination">
+            <div class="pagination" style="display: none">
               <button id="prev-page" disabled>Previous</button>
               <span id="page-info">Page 1 of 32</span>
               <button id="next-page">Next</button>
