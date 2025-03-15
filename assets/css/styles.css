@@ -614,3 +614,71 @@ footer {
     width: 100%;
   }
 }
+
+/* Specification Page Styles */
+.spec-section {
+  margin-bottom: 3rem;
+  padding: 1.5rem;
+  background-color: var(--color-background-alt);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.spec-section h3 {
+  margin-top: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+}
+
+.spec-table th {
+  background-color: var(--color-primary);
+  color: white;
+  text-align: left;
+  padding: 0.75rem;
+  font-weight: 600;
+}
+
+.spec-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+.spec-table tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.spec-table tr:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+}
+
+/* Implementation code examples */
+.code-example {
+  margin: 1.5rem 0;
+}
+
+.code-example h4 {
+  margin-bottom: 0.5rem;
+}
+
+.code-example pre {
+  background-color: var(--color-code-bg);
+  color: var(--color-code-text);
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  line-height: 1.4;
+  font-family: monospace;
+}
+
+.code-example code {
+  font-family: 'Courier New', Courier, monospace;
+  white-space: pre;
+}

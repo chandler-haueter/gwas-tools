@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>GWAS.tools | Logging Specification</title>
+        <meta
+            name="description"
+            content="Detailed specification for logging standards in the GWAS project ecosystem."
+        >
+        <link rel="stylesheet" href="assets/css/styles.css">
+        <link rel="icon" href="assets/images/favicon.ico">
+        <!-- Load the log-viewer JavaScript -->
+        <script src="assets/js/log-viewer.js" defer></script>
+        <!-- Load the main JavaScript -->
+        <script src="assets/js/main.js" defer></script>
+    </head>
+    <body>
+        <!-- Hidden data for the log viewer -->
+        <div id="gist-id" style="display: none">
+            <!-- YOUR_GIST_ID_GOES_HERE -->
+        </div>
+
+        <header>
+            <div class="container">
+                <div class="logo">
+                    <h1>GWAS.tools</h1>
+                    <p class="tagline">Structured Logging & Activity Monitor</p>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html#logs">Logs</a></li>
+                        <li>
+                            <a href="specification.html" class="active"
+                            >Specification</a>
+                        </li>
+                        <li><a href="index.html#about">About</a></li>
+                        <li><a href="index.html#sources">Sources</a></li>
+                        <li><a href="index.html#api">API</a></li>
+                        <li><a href="index.html#help">Help</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <section id="specification" class="container section-padding">
+                <h2>GWAS.tools Logging Specification</h2>
+                <p>
+                    This specification defines the structure and categories of
+                    events that should be logged in the GWAS ecosystem.
+                    Following these standards ensures consistent, comprehensive
+                    logging across all GWAS projects and tools.
+                </p>
+
+                <div class="spec-section">
+                    <h3>Log Structure</h3>
+                    <p>All logs follow this basic structure:</p>
+                    <ul>
+                        <li>
+                            <strong>timestamp</strong>: ISO 8601 datetime
+                            (automatically added)
+                        </li>
+                        <li>
+                            <strong>type</strong>: The event type (e.g.,
+                            git:commit, dev:build)
+                        </li>
+                        <li>
+                            <strong>source</strong>: The source of the log
+                            (e.g., gwas.engineer, gwas.app)
+                        </li>
+                        <li>
+                            <strong>message</strong>: A human-readable
+                            description of the event
+                        </li>
+                        <li>
+                            <strong>details</strong>: Key-value pairs with
+                            additional information
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="spec-section" id="git-activities">
+                    <h3>1. Git & GitHub Activities</h3>
+                    <p>
+                        These events track all interactions with Git
+                        repositories and GitHub.
+                    </p>
+
+                    <table class="spec-table">
+                        <thead>
+                            <tr>
+                                <th>Event Type</th>
+                                <th>Description</th>
+                                <th>Source</th>
+                                <th>Details to Log</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>git:commit</td>
+                                <td>Code committed to local repository</td>
+                                <td>gwas.engineer</td>
+                                <td>
+                                    repo_name, commit_hash, commit_message,
+                                    files_changed, lines_added, lines_removed,
+                                    author_name, author_email, assistant_used
+                                    (if applicable), contribution_split (e.g.,
+                                    ai:80%,human:20%)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>git:push</td>
+                                <td>Code pushed to remote repository</td>
+                                <td>gwas.engineer</td>
+                                <td>
+                                    repo_name, branch, commit_count, remote_url
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>git:pull</td>
+                                <td>Code pulled from remote repository</td>
+                                <td>gwas.engineer</td>
+                                <td>
+                                    repo_name, branch, commit_count,
+                                    files_changed
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>git:merge</td>
+                                <td>Branches merged</td>
+                                <td>gwas.engineer</td>
+                                <td>
+                                    repo_name, source_branch, target_branch,
+                                    conflict_count
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>git:branch</td>
+                                <td>Branch created/deleted</td>
+                                <td>gwas.engineer</td>
+                                <td>
+                                    repo_name, branch_name, action, from_branch
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>github:pr:open</td>
+                                <td>Pull request opened</td>
+                                <td>gwas.engineer</td>
+                                <td>
+                                    repo_name, pr_number, title, description,
+                                    base_branch, head_branch
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>github:pr:merge</td>
+                                <td>Pull request merged</td>
+                                <td>gwas.engineer</td>
+                                <td>
+                                    repo_name, pr_number, merge_strategy,
+                                    commit_count
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>github:issue</td>
+                                <td>Issue created/updated</td>
+                                <td>gwas.engineer</td>
+                                <td>
+                                    repo_name, issue_number, title, action,
+                                    labels
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="spec-section" id="dev-activities">
+                    <h3>2. Development Activities</h3>
+                    <p>
+                        These events track code creation, editing, and
+                        deployment activities.
+                    </p>
+
+                    <table class="spec-table">
+                        <thead>
+                            <tr>
+                                <th>Event Type</th>
+                                <th>Description</th>
+                                <th>Source</th>
+                                <th>Details to Log</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>dev:file:create</td>
+                                <td>New file created</td>
+                                <td>gwas.engineer</td>
+                                <td>
+                                    file_path, file_type, initial_size, editor,
+                                    generator (human/ai)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>dev:file:edit</td>
+                                <td>File edited</td>
+                                <td>gwas.engineer</td>
+                                <td>
+                                    file_path, lines_changed, editor,
+                                    edit_duration, generator (human/ai/mixed)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>dev:build</td>
+                                <td>Project built</td>
+                                <td>gwas.engineer</td>
+                                <td>
+                                    project_name, build_result, duration,
+                                    errors, warnings
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>dev:test</td>
+                                <td>Tests run</td>
+                                <td>gwas.engineer</td>
+                                <td>
+                                    project_name, test_count, passed, failed,
+                                    skipped, duration
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>dev:deploy</td>
+                                <td>Code deployed</td>
+                                <td>gwas.engineer</td>
+                                <td>
+                                    environment, service_name, version,
+                                    deployment_method
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="spec-section" id="ai-activities">
+                    <h3>3. AI Assistant Interactions</h3>
+                    <p>
+                        These events track interactions with AI coding
+                        assistants like Cursor, Claude, or GitHub Copilot.
+                    </p>
+
+                    <table class="spec-table">
+                        <thead>
+                            <tr>
+                                <th>Event Type</th>
+                                <th>Description</th>
+                                <th>Source</th>
+                                <th>Details to Log</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ai:prompt</td>
+                                <td>Query sent to AI</td>
+                                <td>cursor</td>
+                                <td>
+                                    prompt_length, prompt_topic, model_used,
+                                    session_id
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ai:response</td>
+                                <td>Response received from AI</td>
+                                <td>cursor</td>
+                                <td>
+                                    response_length, response_type
+                                    (code/text/mixed), execution_time
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ai:code:generated</td>
+                                <td>Code generated by AI</td>
+                                <td>cursor</td>
+                                <td>
+                                    file_path, lines_generated, language,
+                                    prompt_id, acceptance
+                                    (full/partial/modified)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ai:code:edited</td>
+                                <td>Code edited by AI</td>
+                                <td>cursor</td>
+                                <td>
+                                    file_path, lines_changed, edit_type,
+                                    prompt_id
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ai:command:executed</td>
+                                <td>Command suggested and executed</td>
+                                <td>cursor</td>
+                                <td>
+                                    command, directory, result_code,
+                                    suggested_by
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="spec-section" id="implementation">
+                    <h3>Implementation Examples</h3>
+
+                    <div class="code-example">
+                        <h4>Example: Logging a commit with AI assistance</h4>
+                        <pre
+                        >
+<code>deno task gist:log \
+  --type=git:commit \
+  --source=gwas.engineer \
+  --message="Code committed to repository" \
+  --details="repo_name=gwas-tools,commit_hash=4d6a6ab,commit_message='Add GitHub Gist integration for logs',files_changed=3,lines_added=360,lines_removed=59,author_name=Chan,author_email=chan@example.com,assistant_used=cursor,contribution_split=ai:80%,human:20%"</code></pre
+                        >
+                    </div>
+
+                    <div class="code-example">
+                        <h4>Example: Logging an AI code generation event</h4>
+                        <pre
+                        >
+<code>deno task gist:log \
+  --type=ai:code:generated \
+  --source=cursor \
+  --message="AI generated code for log viewer" \
+  --details="file_path=assets/js/log-viewer.js,lines_generated=320,language=javascript,prompt_id=msg-123,acceptance=full"</code></pre
+                        >
+                    </div>
+                </div>
+
+                <div class="spec-section" id="automation">
+                    <h3>Automating Logs with Git Hooks</h3>
+                    <p>
+                        You can automate logging of Git events using Git hooks.
+                        Here's an example post-commit hook that logs commit
+                        information and prompts for AI contribution:
+                    </p>
+
+                    <div class="code-example">
+                        <pre
+                        >
+<code>#!/bin/bash
+# .git/hooks/post-commit
+
+# Get commit information
+COMMIT_HASH=$(git rev-parse HEAD)
+COMMIT_MSG=$(git log -1 --pretty=%B)
+AUTHOR_NAME=$(git log -1 --pretty=%an)
+AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
+REPO_NAME=$(basename -s .git `git config --get remote.origin.url`)
+FILES_CHANGED=$(git diff-tree --no-commit-id --name-only -r HEAD | wc -l)
+STATS=$(git diff --stat HEAD~1 HEAD | tail -n 1)
+LINES_ADDED=$(echo $STATS | grep -o '[0-9]\+ insertion' | grep -o '[0-9]\+' || echo "0")
+LINES_REMOVED=$(echo $STATS | grep -o '[0-9]\+ deletion' | grep -o '[0-9]\+' || echo "0")
+
+# Ask for assistant information
+echo "Was an AI assistant used? (y/n)"
+read USED_AI
+ASSISTANT=""
+CONTRIBUTION=""
+
+if [ "$USED_AI" = "y" ]; then
+  echo "Which assistant? (cursor/claude/github_copilot/other)"
+  read ASSISTANT
+  echo "Approximate contribution split? (e.g. ai:60%,human:40%)"
+  read CONTRIBUTION
+fi
+
+# Log the commit
+deno task gist:log \
+  --type=git:commit \
+  --source=gwas.engineer \
+  --message="Code committed to repository" \
+  --details="repo_name=$REPO_NAME,commit_hash=$COMMIT_HASH,commit_message='$COMMIT_MSG',files_changed=$FILES_CHANGED,lines_added=$LINES_ADDED,lines_removed=$LINES_REMOVED,author_name=$AUTHOR_NAME,author_email=$AUTHOR_EMAIL,assistant_used=$ASSISTANT,contribution_split=$CONTRIBUTION"</code></pre
+                        >
+                    </div>
+                </div>
+
+                <div class="spec-section" id="visualization">
+                    <h3>Visualization Possibilities</h3>
+                    <p>
+                        With this structured logging data, you can create
+                        visualizations like:
+                    </p>
+                    <ul>
+                        <li>AI vs. human contributions over time</li>
+                        <li>Most frequently edited files</li>
+                        <li>Commit patterns by time of day</li>
+                        <li>Error frequencies during development</li>
+                        <li>Project activity heatmap</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-col">
+                        <h3>GWAS.tools</h3>
+                        <p>
+                            Structured logging and monitoring for the GWAS
+                            ecosystem
+                        </p>
+                    </div>
+                    <div class="footer-col">
+                        <h3>Related Projects</h3>
+                        <ul>
+                            <li><a href="https://gwas.wiki">GWAS Wiki</a></li>
+                            <li>
+                                <a href="https://gwas.engineer"
+                                >GWAS Engineer</a>
+                            </li>
+                            <li><a href="https://gwas.app">GWAS App</a></li>
+                            <li><a href="https://gwas.dev">GWAS Dev</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h3>Resources</h3>
+                        <ul>
+                            <li><a href="#">API Documentation</a></li>
+                            <li><a href="#">Integration Guides</a></li>
+                            <li>
+                                <a href="specification.html"
+                                >Logging Specification</a>
+                            </li>
+                            <li><a href="#">GitHub Repository</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>
+                        &copy; 2025 GWAS Project. All logs are append-only and
+                        preserved for historical record.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>
