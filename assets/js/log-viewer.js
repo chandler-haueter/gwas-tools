@@ -395,21 +395,38 @@ class LogViewer {
 
         try {
             let logs = [];
+            let foundGist = false;
 
             // Try to get logs from Gist if we have an ID
-            if (this.settings.gistId) {
-                logs = await this.fetchLogsFromGist(this.settings.gistId, this.settings.gistFilename);
+            if (this.settings.gistId && this.settings.gistId !== '<!-- YOUR_GIST_ID_GOES_HERE -->') {
+                try {
+                    logs = await this.fetchLogsFromGist(this.settings.gistId, this.settings.gistFilename);
+                    foundGist = true;
+                } catch (gistError) {
+                    console.warn('Error fetching from Gist:', gistError);
+                    foundGist = false;
+                }
             } else {
                 // Look for Gist ID embedded in page
                 const gistIdElement = document.getElementById('gist-id');
-                if (gistIdElement && gistIdElement.textContent) {
-                    this.settings.gistId = gistIdElement.textContent.trim();
-                    logs = await this.fetchLogsFromGist(this.settings.gistId, this.settings.gistFilename);
-                } else {
-                    // Fall back to dummy data if no Gist ID is available
-                    console.warn('No Gist ID found, using dummy data');
-                    logs = this.getDummyLogs();
+                if (gistIdElement && gistIdElement.textContent &&
+                    gistIdElement.textContent.trim() !== '' &&
+                    gistIdElement.textContent.trim() !== '<!-- YOUR_GIST_ID_GOES_HERE -->') {
+                    try {
+                        this.settings.gistId = gistIdElement.textContent.trim();
+                        logs = await this.fetchLogsFromGist(this.settings.gistId, this.settings.gistFilename);
+                        foundGist = true;
+                    } catch (gistError) {
+                        console.warn('Error fetching from embedded Gist ID:', gistError);
+                        foundGist = false;
+                    }
                 }
+            }
+
+            // If no Gist logs found, use dummy data
+            if (!foundGist) {
+                console.log('No valid Gist ID found, using dummy data');
+                logs = this.getDummyLogs();
             }
 
             this.state.logs = logs;
@@ -422,14 +439,14 @@ class LogViewer {
             // Apply filters to the new logs
             this.applyFilters();
 
-            console.log(`Fetched ${logs.length} logs`);
+            console.log(`Fetched ${logs.length} logs (${foundGist ? 'from Gist' : 'dummy data'})`);
         } catch (error) {
-            console.error('Error fetching logs:', error);
+            console.error('Error in fetchLogs:', error);
             this.state.error = error.message || 'Failed to fetch logs';
 
-            // If we failed to fetch from Gist, fall back to dummy data
+            // Always ensure we have some data to display
             if (this.state.logs.length === 0) {
-                console.warn('Error fetching from Gist, using dummy data');
+                console.warn('Falling back to dummy data');
                 this.state.logs = this.getDummyLogs();
                 this.calculateStatistics();
                 this.applyFilters();
@@ -895,18 +912,20 @@ class LogViewer {
      * Render the current logs to the UI
      */
     renderLogs() {
-        const logContainer = document.getElementById('log-viewer');
+        const logContainer = document.querySelector('.log-viewer');
 
         if (!logContainer) {
             console.error('Log container not found');
             return;
         }
 
-        // Clear previous logs
-        while (logContainer.firstChild) {
-            if (!logContainer.firstChild.classList || !logContainer.firstChild.classList.contains('loading-spinner')) {
-                logContainer.removeChild(logContainer.firstChild);
-            }
+        // Clear previous logs while preserving the loading spinner
+        const loadingSpinner = logContainer.querySelector('.loading-spinner');
+        logContainer.innerHTML = '';
+
+        // Add back the spinner (it will be hidden through CSS if not loading)
+        if (loadingSpinner) {
+            logContainer.appendChild(loadingSpinner);
         }
 
         // If no logs, show a message
