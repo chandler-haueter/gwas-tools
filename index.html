@@ -12,8 +12,15 @@
     <link rel="icon" href="assets/images/favicon.ico">
     <!-- Load the log-viewer JavaScript -->
     <script src="assets/js/log-viewer.js" defer></script>
+    <!-- Load the main JavaScript -->
+    <script src="assets/js/main.js" defer></script>
   </head>
   <body>
+    <!-- Hidden data for the log viewer -->
+    <div id="gist-id" style="display: none">
+      <!-- YOUR_GIST_ID_GOES_HERE -->
+    </div>
+
     <header>
       <div class="container">
         <div class="logo">
@@ -51,13 +58,20 @@
             <h3>Filters</h3>
             <div class="filter-group">
               <h4>Log Types</h4>
-              <label><input type="checkbox" name="log-type" value="all" checked> All Types</label>
-              <label><input type="checkbox" name="log-type" value="system"> System</label>
-              <label><input type="checkbox" name="log-type" value="user"> User Activity</label>
-              <label><input type="checkbox" name="log-type" value="api"> API Calls</label>
-              <label><input type="checkbox" name="log-type" value="error"> Errors</label>
-              <label><input type="checkbox" name="log-type" value="warning"> Warnings</label>
-              <label><input type="checkbox" name="log-type" value="info"> Information</label>
+              <label><input type="checkbox" name="log-type" value="all" checked>
+                All Types</label>
+              <label><input type="checkbox" name="log-type" value="system">
+                System</label>
+              <label><input type="checkbox" name="log-type" value="user"> User
+                Activity</label>
+              <label><input type="checkbox" name="log-type" value="api"> API
+                Calls</label>
+              <label><input type="checkbox" name="log-type" value="error">
+                Errors</label>
+              <label><input type="checkbox" name="log-type" value="warning">
+                Warnings</label>
+              <label><input type="checkbox" name="log-type" value="info">
+                Information</label>
             </div>
 
             <div class="filter-group">
@@ -77,17 +91,25 @@
 
             <div class="filter-group">
               <h4>Log Sources</h4>
-              <label><input type="checkbox" name="source" value="all" checked> All Sources</label>
+              <label><input type="checkbox" name="source" value="all" checked>
+                All Sources</label>
               <label><input type="checkbox" name="source" value="gwas.engineer">
                 gwas.engineer</label>
-              <label><input type="checkbox" name="source" value="gwas.app"> gwas.app</label>
-              <label><input type="checkbox" name="source" value="gwas.ai"> gwas.ai</label>
-              <label><input type="checkbox" name="source" value="gwas.dev"> gwas.dev</label>
-              <label><input type="checkbox" name="source" value="gwas.network"> gwas.network</label>
-              <label><input type="checkbox" name="source" value="gwas.wiki"> gwas.wiki</label>
+              <label><input type="checkbox" name="source" value="gwas.app">
+                gwas.app</label>
+              <label><input type="checkbox" name="source" value="gwas.ai">
+                gwas.ai</label>
+              <label><input type="checkbox" name="source" value="gwas.dev">
+                gwas.dev</label>
+              <label><input type="checkbox" name="source" value="gwas.network">
+                gwas.network</label>
+              <label><input type="checkbox" name="source" value="gwas.wiki">
+                gwas.wiki</label>
             </div>
 
-            <button id="apply-filters" class="btn primary">Apply Filters</button>
+            <button id="apply-filters" class="btn primary">
+              Apply Filters
+            </button>
             <button id="reset-filters" class="btn secondary">Reset</button>
           </aside>
 
@@ -138,22 +160,27 @@
       <section id="about" class="container section-padding">
         <h2>About the GWAS.tools Logging System</h2>
         <p>
-          The GWAS.tools logging system provides a comprehensive and structured approach to
-          capturing activities across the entire GWAS project ecosystem. Our append-only log
-          structure ensures a complete history of all actions and events, providing valuable
-          insights for troubleshooting, auditing, and analysis.
+          The GWAS.tools logging system provides a comprehensive and structured
+          approach to capturing activities across the entire GWAS project
+          ecosystem. Our append-only log structure ensures a complete history of
+          all actions and events, providing valuable insights for
+          troubleshooting, auditing, and analysis.
         </p>
 
         <div class="features-grid">
           <div class="feature-card">
             <h3>Structured Logging</h3>
             <p>
-              All logs follow a consistent JSON schema, making them easily parsable and queryable.
+              All logs follow a consistent JSON schema, making them easily
+              parsable and queryable.
             </p>
           </div>
           <div class="feature-card">
             <h3>Cross-Domain Integration</h3>
-            <p>Collect and centralize logs from all GWAS domains and applications.</p>
+            <p>
+              Collect and centralize logs from all GWAS domains and
+              applications.
+            </p>
           </div>
           <div class="feature-card">
             <h3>Real-time Updates</h3>
@@ -162,7 +189,8 @@
           <div class="feature-card">
             <h3>Advanced Filtering</h3>
             <p>
-              Quickly find the information you need with powerful search and filter capabilities.
+              Quickly find the information you need with powerful search and
+              filter capabilities.
             </p>
           </div>
         </div>
@@ -171,18 +199,24 @@
       <section id="sources" class="container section-padding">
         <h2>Log Sources</h2>
         <p>
-          Our logging system integrates with various components of the GWAS ecosystem, capturing
-          events from multiple sources:
+          Our logging system integrates with various components of the GWAS
+          ecosystem, capturing events from multiple sources:
         </p>
 
         <div class="sources-grid">
           <div class="source-card">
             <h3>User Interactions</h3>
-            <p>Mouse clicks, keyboard inputs, form submissions, and other UI events.</p>
+            <p>
+              Mouse clicks, keyboard inputs, form submissions, and other UI
+              events.
+            </p>
           </div>
           <div class="source-card">
             <h3>System Events</h3>
-            <p>Application startups, shutdowns, configuration changes, and system alerts.</p>
+            <p>
+              Application startups, shutdowns, configuration changes, and system
+              alerts.
+            </p>
           </div>
           <div class="source-card">
             <h3>API Transactions</h3>
@@ -190,15 +224,22 @@
           </div>
           <div class="source-card">
             <h3>Performance Metrics</h3>
-            <p>CPU usage, memory consumption, network bandwidth, and response times.</p>
+            <p>
+              CPU usage, memory consumption, network bandwidth, and response
+              times.
+            </p>
           </div>
           <div class="source-card">
             <h3>Error Reports</h3>
-            <p>Exceptions, warnings, and error conditions across applications.</p>
+            <p>
+              Exceptions, warnings, and error conditions across applications.
+            </p>
           </div>
           <div class="source-card">
             <h3>Security Events</h3>
-            <p>Authentication attempts, permissions changes, and security alerts.</p>
+            <p>
+              Authentication attempts, permissions changes, and security alerts.
+            </p>
           </div>
         </div>
       </section>
@@ -206,8 +247,8 @@
       <section id="api" class="container section-padding">
         <h2>Logging API</h2>
         <p>
-          Integrate your applications with our logging system using our simple API. Send log events
-          from any application with a simple HTTP request.
+          Integrate your applications with our logging system using our simple
+          API. Send log events from any application with a simple HTTP request.
         </p>
 
         <div class="code-example">
@@ -264,12 +305,11 @@ curl -X POST https://api.gwas.tools/log \
         </div>
         <div class="footer-bottom">
           <p>
-            &copy; 2025 GWAS Project. All logs are append-only and preserved for historical record.
+            &copy; 2025 GWAS Project. All logs are append-only and preserved for
+            historical record.
           </p>
         </div>
       </div>
     </footer>
-
-    <script src="assets/js/main.js"></script>
   </body>
 </html>

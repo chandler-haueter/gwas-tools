@@ -28,11 +28,14 @@ class LogViewer {
             // DOM element to render the log viewer
             container: options.container || '#log-viewer',
 
-            // API endpoint for fetching logs
-            apiEndpoint: options.apiEndpoint || '/api/logs',
+            // GitHub Gist ID for fetching logs
+            gistId: options.gistId || '',
+
+            // Gist filename (usually gwas_logs.csv)
+            gistFilename: options.gistFilename || 'gwas_logs.csv',
 
             // How often to refresh the logs (in milliseconds)
-            refreshInterval: options.refreshInterval || 10000,
+            refreshInterval: options.refreshInterval || 30000,
 
             // Maximum number of entries to display
             maxEntries: options.maxEntries || 1000,
@@ -382,7 +385,7 @@ class LogViewer {
     }
 
     /**
-     * Fetch logs from the API
+     * Fetch logs from the GitHub Gist
      */
     async fetchLogs() {
         if (this.state.isLoading) return;
@@ -391,9 +394,23 @@ class LogViewer {
         this.updateLoadingState();
 
         try {
-            // In a real implementation, this would make an API call
-            // For demo purposes, we'll use dummy data
-            const logs = this.getDummyLogs();
+            let logs = [];
+
+            // Try to get logs from Gist if we have an ID
+            if (this.settings.gistId) {
+                logs = await this.fetchLogsFromGist(this.settings.gistId, this.settings.gistFilename);
+            } else {
+                // Look for Gist ID embedded in page
+                const gistIdElement = document.getElementById('gist-id');
+                if (gistIdElement && gistIdElement.textContent) {
+                    this.settings.gistId = gistIdElement.textContent.trim();
+                    logs = await this.fetchLogsFromGist(this.settings.gistId, this.settings.gistFilename);
+                } else {
+                    // Fall back to dummy data if no Gist ID is available
+                    console.warn('No Gist ID found, using dummy data');
+                    logs = this.getDummyLogs();
+                }
+            }
 
             this.state.logs = logs;
             this.state.lastUpdated = new Date();
@@ -409,11 +426,148 @@ class LogViewer {
         } catch (error) {
             console.error('Error fetching logs:', error);
             this.state.error = error.message || 'Failed to fetch logs';
+
+            // If we failed to fetch from Gist, fall back to dummy data
+            if (this.state.logs.length === 0) {
+                console.warn('Error fetching from Gist, using dummy data');
+                this.state.logs = this.getDummyLogs();
+                this.calculateStatistics();
+                this.applyFilters();
+            }
         } finally {
             this.state.isLoading = false;
             this.updateLoadingState();
             this.updateLastUpdateTime();
         }
+    }
+
+    /**
+     * Fetch logs from a GitHub Gist
+     * @param {string} gistId - The ID of the GitHub Gist
+     * @param {string} filename - The filename within the Gist
+     * @returns {Array} - Array of log objects
+     */
+    async fetchLogsFromGist(gistId, filename) {
+        console.log(`Fetching logs from Gist ${gistId}, file: ${filename}`);
+
+        // Fetch the Gist data
+        const response = await fetch(`https://api.github.com/gists/${gistId}`);
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch Gist: ${response.status} ${response.statusText}`);
+        }
+
+        const gistData = await response.json();
+
+        // Check if the file exists in the Gist
+        if (!gistData.files || !gistData.files[filename]) {
+            throw new Error(`File ${filename} not found in Gist`);
+        }
+
+        // Get the raw content URL for the file
+        const rawUrl = gistData.files[filename].raw_url;
+
+        // Fetch the raw content
+        const rawResponse = await fetch(rawUrl);
+
+        if (!rawResponse.ok) {
+            throw new Error(`Failed to fetch raw file: ${rawResponse.status} ${rawResponse.statusText}`);
+        }
+
+        const csvContent = await rawResponse.text();
+
+        // Parse the CSV data into log objects
+        return this.parseCSVToLogs(csvContent);
+    }
+
+    /**
+     * Parse CSV content into log objects
+     * @param {string} csvContent - CSV content from the Gist
+     * @returns {Array} - Array of log objects
+     */
+    parseCSVToLogs(csvContent) {
+        // Split by lines
+        const lines = csvContent.trim().split('\n');
+
+        // Ensure there's at least a header and one line of data
+        if (lines.length < 2) {
+            return [];
+        }
+
+        // Skip the header row and process each line
+        const logs = [];
+
+        for (let i = 1; i < lines.length; i++) {
+            const line = lines[i];
+            if (!line.trim()) continue; // Skip empty lines
+
+            // Parse the CSV line, handling quoted values properly
+            const values = this.parseCSVLine(line);
+
+            if (values.length >= 5) {
+                const [timestamp, type, source, message, detailsStr] = values;
+
+                // Parse details if available
+                let details = null;
+                if (detailsStr && detailsStr.trim()) {
+                    details = {};
+                    const detailPairs = detailsStr.split(',');
+                    detailPairs.forEach(pair => {
+                        const [key, value] = pair.split('=');
+                        if (key && value) {
+                            details[key.trim()] = value.trim();
+                        }
+                    });
+                }
+
+                logs.push({
+                    timestamp,
+                    type: type.replace(/"/g, ''),
+                    source: source.replace(/"/g, ''),
+                    message: message.replace(/"/g, ''),
+                    details
+                });
+            }
+        }
+
+        return logs;
+    }
+
+    /**
+     * Parse a CSV line, handling quoted values properly
+     * @param {string} line - A line from the CSV file
+     * @returns {Array} - Array of field values
+     */
+    parseCSVLine(line) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+
+            if (char === '"') {
+                // If we have a double quote inside quotes, it's an escaped quote
+                if (inQuotes && i + 1 < line.length && line[i + 1] === '"') {
+                    current += '"';
+                    i++; // Skip the next quote
+                } else {
+                    // Toggle quote state
+                    inQuotes = !inQuotes;
+                }
+            } else if (char === ',' && !inQuotes) {
+                // End of field
+                result.push(current);
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+
+        // Don't forget the last field
+        result.push(current);
+
+        return result;
     }
 
     /**
@@ -1064,9 +1218,18 @@ class LogViewer {
 
 // Initialize the log viewer when the page loads
 document.addEventListener('DOMContentLoaded', () => {
+    // Check for a Gist ID in the page
+    let gistId = '';
+    const gistIdElement = document.getElementById('gist-id');
+    if (gistIdElement) {
+        gistId = gistIdElement.textContent.trim();
+    }
+
     // Create and initialize the log viewer
     const logViewer = new LogViewer({
         container: '#log-viewer',
+        gistId: gistId,
+        gistFilename: 'gwas_logs.csv',
         theme: 'system',
         realTimeUpdates: true,
         refreshInterval: 30000, // 30 seconds
